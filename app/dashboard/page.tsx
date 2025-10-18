@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase';
 import { Pitch, DashboardStats } from '@/lib/types';
-import { Brain, Plus, FileText, Share2, Edit, Trash2, Calendar } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { Brain, Plus, FileText, Share2, Edit, Trash2, Calendar, Download } from 'lucide-react';
+import { formatDate, downloadPitchAsPDF } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -70,6 +70,15 @@ export default function DashboardPage() {
       setPitches(pitches.filter(pitch => pitch.id !== pitchId));
     } catch (error) {
       console.error('Error deleting pitch:', error);
+    }
+  };
+
+  const handleExportPDF = async (pitch: Pitch) => {
+    try {
+      downloadPitchAsPDF(pitch, `${pitch.startup_name.replace(/\s+/g, '_')}_pitch`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
     }
   };
 
@@ -194,6 +203,13 @@ export default function DashboardPage() {
                     >
                       <Edit className="h-4 w-4" />
                     </Link>
+                    <button
+                      onClick={() => handleExportPDF(pitch)}
+                      className="text-green-600 hover:text-green-800 p-2"
+                      title="Export PDF"
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => handleDeletePitch(pitch.id)}
                       className="text-red-600 hover:text-red-800 p-2"

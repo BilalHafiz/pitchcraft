@@ -71,7 +71,7 @@ export default function CreatePitchPage() {
 
       if (pitchError) throw pitchError;
 
-      router.push(`/edit/${(pitchData as any).id}`);
+      router.push('/dashboard');
     } catch (err) {
       console.error('Error creating pitch:', err);
       setError('Failed to generate pitch. Please try again.');
@@ -135,7 +135,7 @@ export default function CreatePitchPage() {
                 Language / زبان
               </label>
               <div className="flex space-x-4">
-                <label className="flex items-center">
+                <label className="flex items-center text-gray-900">
                   <input
                     type="radio"
                     name="language"
@@ -147,7 +147,7 @@ export default function CreatePitchPage() {
                   <Globe className="h-4 w-4 mr-1" />
                   English
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center text-gray-900">
                   <input
                     type="radio"
                     name="language"
@@ -221,7 +221,7 @@ export default function CreatePitchPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {formData.language === 'ur' ? 'ٹون' : 'Tone'}
               </label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-4 text-gray-900">
                 <label className="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
                   <input
                     type="radio"
@@ -236,7 +236,7 @@ export default function CreatePitchPage() {
                     <div className="text-sm text-gray-500">{formData.language === 'ur' ? 'پروفیشنل' : 'Professional'}</div>
                   </div>
                 </label>
-                <label className="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
+                <label className="flex items-center p-3 border text-gray-900 border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
                   <input
                     type="radio"
                     name="tone"
