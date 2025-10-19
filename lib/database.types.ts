@@ -58,6 +58,7 @@ export interface Database {
           landing_copy: string
           color_palette: string | null
           logo_concept: string | null
+          website_html: string | null
           language: 'en' | 'ur'
           created_at: string
           updated_at: string
@@ -75,6 +76,7 @@ export interface Database {
           landing_copy: string
           color_palette?: string | null
           logo_concept?: string | null
+          website_html?: string | null
           language: 'en' | 'ur'
           created_at?: string
           updated_at?: string
@@ -92,6 +94,7 @@ export interface Database {
           landing_copy?: string
           color_palette?: string | null
           logo_concept?: string | null
+          website_html?: string | null
           language?: 'en' | 'ur'
           created_at?: string
           updated_at?: string

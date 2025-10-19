@@ -19,6 +19,7 @@ export default function DashboardPage() {
     recent_pitches: []
   });
   const [loading, setLoading] = useState(true);
+  const [generatingWebsite, setGeneratingWebsite] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -73,28 +74,52 @@ export default function DashboardPage() {
     }
   };
 
-  const handleViewWebsite = async (pitchId: string) => {
+  const handleViewWebsite = async (pitch: Pitch) => {
     try {
-      const response = await fetch('/api/generate-website', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pitchId }),
-      });
-
-      if (response.ok) {
-        const htmlContent = await response.text();
-        
-        const blob = new Blob([htmlContent], { type: 'text/html' });
+      // Check if website HTML is already stored
+      if (pitch.website_html) {
+        // Use stored HTML
+        const blob = new Blob([pitch.website_html], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       } else {
-        alert('Failed to generate website. Please try again.');
+        // Show loading state
+        setGeneratingWebsite(pitch.id);
+        
+        // Generate website if not stored
+        const response = await fetch('/api/generate-website', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ pitchId: pitch.id }),
+        });
+
+        if (response.ok) {
+          const htmlContent = await response.text();
+          
+          // Save the generated HTML to database for future use
+          const { error: updateError } = await (supabase as any)
+            .from('pitches')
+            .update({ website_html: htmlContent })
+            .eq('id', pitch.id);
+
+          if (updateError) {
+            console.error('Error saving website HTML:', updateError);
+          }
+          
+          const blob = new Blob([htmlContent], { type: 'text/html' });
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+        } else {
+          alert('Failed to generate website. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Error generating website:', error);
       alert('Failed to generate website. Please try again.');
+    } finally {
+      setGeneratingWebsite(null);
     }
   };
 
@@ -222,11 +247,20 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => handleViewWebsite(pitch.id)}
-                      className="text-purple-600 hover:text-purple-800 p-2"
-                      title="View Website"
+                      onClick={() => handleViewWebsite(pitch)}
+                      disabled={generatingWebsite === pitch.id}
+                      className={`p-2 ${
+                        generatingWebsite === pitch.id 
+                          ? 'text-gray-400 cursor-not-allowed' 
+                          : 'text-purple-600 hover:text-purple-800'
+                      }`}
+                      title={generatingWebsite === pitch.id ? "Generating website..." : "View Website"}
                     >
-                      <Globe className="h-4 w-4" />
+                      {generatingWebsite === pitch.id ? (
+                        <Brain className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Globe className="h-4 w-4" />
+                      )}
                     </button>
                     <Link
                       href={`/edit/${pitch.id}`}

@@ -82,6 +82,15 @@ export default function CreatePitchPage() {
       if (response.ok) {
         const htmlContent = await response.text();
         
+        const { error: updateError } = await (supabase as any)
+          .from('pitches')
+          .update({ website_html: htmlContent })
+          .eq('id', (pitchData as any).id);
+
+        if (updateError) {
+          console.error('Error saving website HTML:', updateError);
+        }
+        
         const blob = new Blob([htmlContent], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');

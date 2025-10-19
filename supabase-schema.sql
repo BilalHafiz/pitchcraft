@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS pitches (
   landing_copy TEXT NOT NULL,
   color_palette TEXT,
   logo_concept TEXT,
+  website_html TEXT,
   language TEXT CHECK (language IN ('en', 'ur')) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

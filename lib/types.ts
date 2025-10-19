@@ -30,6 +30,7 @@ export interface Pitch {
   landing_copy: string;
   color_palette?: string;
   logo_concept?: string;
+  website_html?: string;
   language: 'en' | 'ur';
   created_at: string;
   updated_at: string;
