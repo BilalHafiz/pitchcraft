@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase';
 import { Pitch, DashboardStats } from '@/lib/types';
-import { Brain, Plus, FileText, Share2, Edit, Trash2, Calendar, Download } from 'lucide-react';
+import { Brain, Plus, FileText, Share2, Edit, Trash2, Calendar, Download, Globe } from 'lucide-react';
 import { formatDate, downloadPitchAsPDF } from '@/lib/utils';
 
 export default function DashboardPage() {
@@ -70,6 +70,31 @@ export default function DashboardPage() {
       setPitches(pitches.filter(pitch => pitch.id !== pitchId));
     } catch (error) {
       console.error('Error deleting pitch:', error);
+    }
+  };
+
+  const handleViewWebsite = async (pitchId: string) => {
+    try {
+      const response = await fetch('/api/generate-website', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pitchId }),
+      });
+
+      if (response.ok) {
+        const htmlContent = await response.text();
+        
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      } else {
+        alert('Failed to generate website. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error generating website:', error);
+      alert('Failed to generate website. Please try again.');
     }
   };
 
@@ -196,6 +221,13 @@ export default function DashboardPage() {
                     <p className="text-gray-600 italic">"{pitch.tagline}"</p>
                   </div>
                   <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleViewWebsite(pitch.id)}
+                      className="text-purple-600 hover:text-purple-800 p-2"
+                      title="View Website"
+                    >
+                      <Globe className="h-4 w-4" />
+                    </button>
                     <Link
                       href={`/edit/${pitch.id}`}
                       className="text-blue-600 hover:text-blue-800 p-2"

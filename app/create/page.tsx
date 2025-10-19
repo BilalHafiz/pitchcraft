@@ -71,7 +71,27 @@ export default function CreatePitchPage() {
 
       if (pitchError) throw pitchError;
 
-      router.push('/dashboard');
+      const response = await fetch('/api/generate-website', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pitchId: (pitchData as any).id }),
+      });
+
+      if (response.ok) {
+        const htmlContent = await response.text();
+        
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1000);
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       console.error('Error creating pitch:', err);
       setError('Failed to generate pitch. Please try again.');
